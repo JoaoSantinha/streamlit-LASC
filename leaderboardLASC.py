@@ -106,27 +106,12 @@ def app():
     
     #groud_truth_file = 'master/tb_ground_truth.json'
     #if st.button("SUBMIT"):
-    st.button("SUBMIT")
+    btn = st.button("SUBMIT")
     ## Showing Leaderboard
     #placeholder = st.empty()
     #container = st.container()
     #with placeholder.container():
-    st.header("Leaderboard")
-    if os.stat("leaderboardLASC.csv").st_size == 0:
-        st.text("NO SUBMISSION YET")
-    else:
-        df_leaderboard = get_leaderboard_dataframe(csv_file = 'leaderboardLASC.csv', greater_is_better = greater_is_better)
-        hide_table_row_index = """
-        <style>
-        thead tr th:first-child {display:none}
-        tbody th {display:none}
-        </style>
-        """
-        st.markdown(hide_table_row_index, unsafe_allow_html=True)
-        df_leaderboard['index']+=1
-        df_leaderboard.rename(columns={"index": "Place"}, inplace=True)
-        df_leaderboard['Place']=[i+1 for i in range(len(df_leaderboard['Place']))]
-        st.table(df_leaderboard.style.format({"Score (cm^3 difference)": "{:.2f}"}))
+    
     #if uploaded_file is None:
     #    st.text("UPLOAD FIRST")
     #else:
@@ -168,13 +153,29 @@ def app():
         #score = abs(physical_size*10e-3 - 113.30)
         #st.text(f"YOUR score was: {score}")
         ## save score
+    if btn:
         score = round(abs(float(score) - 113.30), ndigits=2)
         
         datetime_now = datetime.now().strftime("%Y%m%d_%H%M%S")
         with open("leaderboardLASC.csv", "a+") as leaderboard_csv:
             leaderboard_csv.write(f"{username}, {image_type},{score},{segmentation_tool},{datetime_now}\n")
             'Segmenter Name', 'Baseline or Follow-up', 'Score (cm^3 difference)', 'Segmentation Tool', 'Submission Time'
-
+    st.header("Leaderboard")
+    if os.stat("leaderboardLASC.csv").st_size == 0:
+        st.text("NO SUBMISSION YET")
+    else:
+        df_leaderboard = get_leaderboard_dataframe(csv_file = 'leaderboardLASC.csv', greater_is_better = greater_is_better)
+        hide_table_row_index = """
+        <style>
+        thead tr th:first-child {display:none}
+        tbody th {display:none}
+        </style>
+        """
+        st.markdown(hide_table_row_index, unsafe_allow_html=True)
+        df_leaderboard['index']+=1
+        df_leaderboard.rename(columns={"index": "Place"}, inplace=True)
+        df_leaderboard['Place']=[i+1 for i in range(len(df_leaderboard['Place']))]
+        st.table(df_leaderboard.style.format({"Score (cm^3 difference)": "{:.2f}"}))
         # Showing Leaderboard
         #st.header("Leaderboard")
         #if os.stat("leaderboardLASC.csv").st_size == 0:
