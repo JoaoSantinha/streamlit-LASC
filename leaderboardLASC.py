@@ -105,48 +105,69 @@ def app():
     #                                 type=['nii', 'gz', 'nrrd', 'zip'])
     
     #groud_truth_file = 'master/tb_ground_truth.json'
-    if st.button("SUBMIT"):
-        #if uploaded_file is None:
-        #    st.text("UPLOAD FIRST")
-        #else:
-            #print(uploaded_file.name)
-            #store_data(uploaded_file, temp_data_directory)
-            ## save submission
-            ##print(uploaded_file)
-            #path_to_file = os.path.join(temp_data_directory, 
-            #                            uploaded_file.name.replace('.zip',''))
-            ##print(path_to_file)
-            ##file_bytes = np.asarray(bytearray(uploaded_file.read()))
-            ##print(file_bytes.shape)
-            #image_seg = sitk.ReadImage(path_to_file)# sitk.ReadImage(io.StringIO(uploaded_file.getvalue().decode("utf-8")))
-            ##print(image_seg)
-            #
-            #label_map = sitk.LabelImageToLabelMap(image1=image_seg)# calculate score
-            #label_map_float = sitk.Cast(label_map, sitk.sitkInt16)
-            #
-            #label_stats = sitk.LabelShapeStatisticsImageFilter()
-            #label_stats.Execute(image1=label_map_float)
-            #number_of_labels = label_stats.GetNumberOfLabels()
-            #
-            ##print(number_of_labels)
-            #merged_label_map=sitk.RelabelComponent(label_map_float)
-            # 
-            ##label_stats_ps = sitk.LabelShapeStatisticsImageFilter()
-            ##label_stats_ps.Execute(image1=merged_label_map)
-            ##physical_size = label_stats_ps.GetPhysicalSize(1)#
+    #if st.button("SUBMIT"):
+    st.button("SUBMIT")
+    ## Showing Leaderboard
+    #placeholder = st.empty()
+    #container = st.container()
+    #with placeholder.container():
+    st.header("Leaderboard")
+    if os.stat("leaderboardLASC.csv").st_size == 0:
+        st.text("NO SUBMISSION YET")
+    else:
+        df_leaderboard = get_leaderboard_dataframe(csv_file = 'leaderboardLASC.csv', greater_is_better = greater_is_better)
+        hide_table_row_index = """
+        <style>
+        thead tr th:first-child {display:none}
+        tbody th {display:none}
+        </style>
+        """
+        st.markdown(hide_table_row_index, unsafe_allow_html=True)
+        df_leaderboard['index']+=1
+        df_leaderboard.rename(columns={"index": "Place"}, inplace=True)
+        df_leaderboard['Place']=[i+1 for i in range(len(df_leaderboard['Place']))]
+        st.table(df_leaderboard.style.format({"Score (cm^3 difference)": "{:.2f}"}))
+    #if uploaded_file is None:
+    #    st.text("UPLOAD FIRST")
+    #else:
+        #print(uploaded_file.name)
+        #store_data(uploaded_file, temp_data_directory)
+        ## save submission
+        ##print(uploaded_file)
+        #path_to_file = os.path.join(temp_data_directory, 
+        #                            uploaded_file.name.replace('.zip',''))
+        ##print(path_to_file)
+        ##file_bytes = np.asarray(bytearray(uploaded_file.read()))
+        ##print(file_bytes.shape)
+        #image_seg = sitk.ReadImage(path_to_file)# sitk.ReadImage(io.StringIO(uploaded_file.getvalue().decode("utf-8")))
+        ##print(image_seg)
+        #
+        #label_map = sitk.LabelImageToLabelMap(image1=image_seg)# calculate score
+        #label_map_float = sitk.Cast(label_map, sitk.sitkInt16)
+        #
+        #label_stats = sitk.LabelShapeStatisticsImageFilter()
+        #label_stats.Execute(image1=label_map_float)
+        #number_of_labels = label_stats.GetNumberOfLabels()
+        #
+        ##print(number_of_labels)
+        #merged_label_map=sitk.RelabelComponent(label_map_float)
+        # 
+        ##label_stats_ps = sitk.LabelShapeStatisticsImageFilter()
+        ##label_stats_ps.Execute(image1=merged_label_map)
+        ##physical_size = label_stats_ps.GetPhysicalSize(1)#
 
-            #if number_of_labels == 15:
-            #    merged_label_map = sitk.BinaryThreshold(merged_label_map, lowerThreshold=2)
-            #label_stats_ps = sitk.LabelShapeStatisticsImageFilter()
-            #label_stats_ps.Execute(image1=merged_label_map)
-            #physical_size = label_stats_ps.GetPhysicalSize(1)
-            #
-            ##print(physical_size)
-            ##dice_scores_user = dicescoring.dice_list(groud_truth_file, uploaded_file)
-            #
-            #score = abs(physical_size*10e-3 - 113.30)
-            #st.text(f"YOUR score was: {score}")
-            ## save score
+        #if number_of_labels == 15:
+        #    merged_label_map = sitk.BinaryThreshold(merged_label_map, lowerThreshold=2)
+        #label_stats_ps = sitk.LabelShapeStatisticsImageFilter()
+        #label_stats_ps.Execute(image1=merged_label_map)
+        #physical_size = label_stats_ps.GetPhysicalSize(1)
+        #
+        ##print(physical_size)
+        ##dice_scores_user = dicescoring.dice_list(groud_truth_file, uploaded_file)
+        #
+        #score = abs(physical_size*10e-3 - 113.30)
+        #st.text(f"YOUR score was: {score}")
+        ## save score
         score = round(abs(float(score) - 113.30), ndigits=2)
         
         datetime_now = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -155,22 +176,22 @@ def app():
             'Segmenter Name', 'Baseline or Follow-up', 'Score (cm^3 difference)', 'Segmentation Tool', 'Submission Time'
 
         # Showing Leaderboard
-        st.header("Leaderboard")
-        if os.stat("leaderboardLASC.csv").st_size == 0:
-            st.text("NO SUBMISSION YET")
-        else:
-            df_leaderboard = get_leaderboard_dataframe(csv_file = 'leaderboardLASC.csv', greater_is_better = greater_is_better)
-            hide_table_row_index = """
-            <style>
-            thead tr th:first-child {display:none}
-            tbody th {display:none}
-            </style>
-            """
-            st.markdown(hide_table_row_index, unsafe_allow_html=True)
-            df_leaderboard['index']+=1
-            df_leaderboard.rename(columns={"index": "Place"}, inplace=True)
-            df_leaderboard['Place']=[i+1 for i in range(len(df_leaderboard['Place']))]
-            st.table(df_leaderboard.style.format({"Score (cm^3 difference)": "{:.2f}"}))
+        #st.header("Leaderboard")
+        #if os.stat("leaderboardLASC.csv").st_size == 0:
+        #    st.text("NO SUBMISSION YET")
+        #else:
+        #    df_leaderboard = get_leaderboard_dataframe(csv_file = 'leaderboardLASC.csv', greater_is_better = greater_is_better)
+        #    hide_table_row_index = """
+        #    <style>
+        #    thead tr th:first-child {display:none}
+        #    tbody th {display:none}
+        #    </style>
+        #    """
+        #    st.markdown(hide_table_row_index, unsafe_allow_html=True)
+        #    df_leaderboard['index']+=1
+        #    df_leaderboard.rename(columns={"index": "Place"}, inplace=True)
+        #    df_leaderboard['Place']=[i+1 for i in range(len(df_leaderboard['Place']))]
+        #    st.table(df_leaderboard.style.format({"Score (cm^3 difference)": "{:.2f}"}))
             
 
     # To register master data
