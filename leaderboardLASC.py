@@ -145,7 +145,7 @@ def app():
             #score = abs(physical_size*10e-3 - 113.30)
             #st.text(f"YOUR score was: {score}")
             ## save score
-        score = abs(float(score) - 113.30)
+        score = round(abs(float(score) - 113.30), ndigits=2)
         datetime_now = datetime.now().strftime("%Y%m%d_%H%M%S")
         with open("leaderboardLASC.csv", "a+") as leaderboard_csv:
             leaderboard_csv.write(f"{username}, {image_type},{score},{segmentation_tool},{datetime_now}\n")
