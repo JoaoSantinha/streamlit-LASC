@@ -60,6 +60,7 @@ def relative_time(t_diff):
             return f"{seconds}s"
 
 def get_leaderboard_dataframe(csv_file = 'leaderboardLASC.csv', greater_is_better = True):
+    pd.set_option('display.precision', 2)
     df_leaderboard = pd.read_csv('leaderboardLASC.csv', header = None)
     print(df_leaderboard)
     df_leaderboard.columns = ['Segmenter Name', 'Baseline or Follow-up', 'Score (cm^3 difference)', 'Segmentation Tool', 'Submission Time']
@@ -71,6 +72,7 @@ def get_leaderboard_dataframe(csv_file = 'leaderboardLASC.csv', greater_is_bette
     df_leaderboard = df_leaderboard.reset_index()
     #df_leaderboard.columns = ['Segmenter Name','Score (cm^3 difference)', 'Entries', 'Last']
     #df_leaderboard['Last'] = df_leaderboard['Last'].map(lambda x: relative_time(datetime.now() - datetime.strptime(x, "%Y%m%d_%H%M%S")))
+    #df_leaderboard['Score (cm^3 difference)'] = df_leaderboard['Score (cm^3 difference)'].apply(lambda x: float("{:.2f}".format(x)))
     return df_leaderboard
 
 def app():
@@ -145,8 +147,8 @@ def app():
             #score = abs(physical_size*10e-3 - 113.30)
             #st.text(f"YOUR score was: {score}")
             ## save score
-        score = str(round(abs(float(score) - 113.30), ndigits=2))
-        print(score)
+        score = round(abs(float(score) - 113.30), ndigits=2)
+        
         datetime_now = datetime.now().strftime("%Y%m%d_%H%M%S")
         with open("leaderboardLASC.csv", "a+") as leaderboard_csv:
             leaderboard_csv.write(f"{username}, {image_type},{score},{segmentation_tool},{datetime_now}\n")
@@ -168,7 +170,7 @@ def app():
             df_leaderboard['index']+=1
             df_leaderboard.rename(columns={"index": "Place"}, inplace=True)
             df_leaderboard['Place']=[i+1 for i in range(len(df_leaderboard['Place']))]
-            st.table(df_leaderboard)
+            st.table(df_leaderboard.style.format({"Score (cm^3 difference)": "{:.2f}"}))
             
 
     # To register master data
