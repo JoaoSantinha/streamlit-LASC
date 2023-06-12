@@ -1,11 +1,5 @@
 import streamlit as st
-import pandas as pd
-import json
-import os
-
-import leaderboardtb
 import leaderboardLASC
-#import leaderboardcovid
 import streamlit as st
 from PIL import Image
 

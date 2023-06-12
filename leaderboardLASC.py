@@ -3,10 +3,7 @@ import pandas as pd
 import json
 import os
 from datetime import datetime
-import dicescoring
-import numpy as np
 import io
-import SimpleITK as sitk
 import zipfile
 import random
 import string
